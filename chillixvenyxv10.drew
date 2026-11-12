@@ -1,0 +1,321 @@
+local CorrectKey = "ChilliXVenyxHubV10Key - StealAnEggVip"
+local GetKeyLink = "https://link4m.net/EVJY8G"
+
+-- Tên file lưu Key ngầm để dùng tính năng nhớ 24h
+local SaveFileName = "ChilliVenyx_KeyData.json"
+local httpService = game:GetService("HttpService")
+
+-- Kiểm tra xem đã lưu key và còn hạn 24h hay không (chạy ngầm, không hiện chữ 24h lên menu)
+local function CheckSavedKey()
+    if readfile and isfile and isfile(SaveFileName) then
+        local success, data = pcall(function()
+            return httpService:JSONDecode(readfile(SaveFileName))
+        end)
+        if success and data and data.Key == CorrectKey then
+            -- Kiểm tra thời gian (24 giờ = 86400 giây)
+            if os.time() - data.Time < 86400 then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+-- Nếu đã lưu key hợp lệ trong 24h thì bỏ qua menu và chạy thẳng script luôn
+if CheckSavedKey() then
+    loadstring(game:HttpGet("https://gist.githubusercontent.com/thuyngudot42-svg/b343c9d9fa060b6deb1141b7851301f8/raw/3c92f5a61d76a6d18278160dbb8921e251ffd753/chilli-Venyxhub-ba-khi-909"))()
+    return -- Dừng, không bật menu lên nữa
+end
+
+-- Dịch vụ GUI
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+
+-- Xóa UI cũ nếu có để tránh trùng lặp
+if CoreGui:FindFirstChild("ChilliVenyxKeySystem") then
+    CoreGui.ChilliVenyxKeySystem:Destroy()
+end
+
+-- Tạo ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ChilliVenyxKeySystem"
+ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Tọa độ vị trí gốc của khung chính
+local originalPos = UDim2.new(0.5, -200, 0.5, -135)
+
+-- Khung nền chính (Hiệu ứng kính mờ trong suốt hiện đại)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
+MainFrame.BackgroundTransparency = 0.2
+MainFrame.Position = originalPos
+MainFrame.Size = UDim2.new(0, 400, 0, 275)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.Parent = MainFrame
+
+-- Viền phát quang đỏ nổi bật
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Parent = MainFrame
+UIStroke.Color = Color3.fromRGB(255, 30, 65)
+UIStroke.Transparency = 0.35
+UIStroke.Thickness = 1.5
+
+-- Thanh trang trí nhỏ ở đỉnh khung
+local TopBar = Instance.new("Frame")
+TopBar.Parent = MainFrame
+TopBar.BackgroundColor3 = Color3.fromRGB(255, 30, 65)
+TopBar.BackgroundTransparency = 0.1
+TopBar.Position = UDim2.new(0.5, -50, 0, 0)
+TopBar.Size = UDim2.new(0, 100, 0, 3)
+local TopBarCorner = Instance.new("UICorner")
+TopBarCorner.CornerRadius = UDim.new(1, 0)
+TopBarCorner.Parent = TopBar
+
+-- Tiêu đề chính (Căn giữa, font cực đẹp và cao cấp)
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0, 16)
+Title.Size = UDim2.new(1, 0, 0, 26)
+Title.Font = Enum.Font.FredokaOne
+Title.Text = "CHILLI X VENYX V10"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 20
+Title.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Dòng phụ tiếng Anh nhỏ dưới tiêu đề
+local SubTitle = Instance.new("TextLabel")
+SubTitle.Name = "SubTitle"
+SubTitle.Parent = MainFrame
+SubTitle.BackgroundTransparency = 1
+SubTitle.Position = UDim2.new(0, 0, 0, 42)
+SubTitle.Size = UDim2.new(1, 0, 0, 18)
+SubTitle.Font = Enum.Font.GothamMedium
+SubTitle.Text = "Please enter the correct key here"
+SubTitle.TextColor3 = Color3.fromRGB(255, 100, 120)
+SubTitle.TextSize = 12
+SubTitle.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Nút đóng (X)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Name = "CloseBtn"
+CloseBtn.Parent = MainFrame
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Position = UDim2.new(1, -40, 0, 15)
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Text = "×"
+CloseBtn.TextColor3 = Color3.fromRGB(160, 160, 175)
+CloseBtn.TextSize = 22
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Ô nhập Key (Thiết kế trong suốt, bo góc mượt)
+local KeyBox = Instance.new("TextBox")
+KeyBox.Name = "KeyBox"
+KeyBox.Parent = MainFrame
+KeyBox.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
+KeyBox.BackgroundTransparency = 0.4
+KeyBox.Position = UDim2.new(0.5, -170, 0, 75)
+KeyBox.Size = UDim2.new(0, 340, 0, 46)
+KeyBox.Font = Enum.Font.GothamMedium
+KeyBox.PlaceholderText = "Enter your license key here..."
+KeyBox.Text = ""
+KeyBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyBox.PlaceholderColor3 = Color3.fromRGB(110, 110, 125)
+KeyBox.TextSize = 14
+KeyBox.ClearTextOnFocus = false
+
+local KeyBoxCorner = Instance.new("UICorner")
+KeyBoxCorner.CornerRadius = UDim.new(0, 10)
+KeyBoxCorner.Parent = KeyBox
+
+local KeyBoxStroke = Instance.new("UIStroke")
+KeyBoxStroke.Parent = KeyBox
+KeyBoxStroke.Color = Color3.fromRGB(55, 55, 70)
+KeyBoxStroke.Transparency = 0.5
+KeyBoxStroke.Thickness = 1
+
+-- Khung chứa thông báo hiện đại dạng Badge (Viên thuốc nổi bật)
+local StatusFrame = Instance.new("Frame")
+StatusFrame.Name = "StatusFrame"
+StatusFrame.Parent = MainFrame
+StatusFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+StatusFrame.BackgroundTransparency = 0.5
+StatusFrame.Position = UDim2.new(0.5, -170, 0, 130)
+StatusFrame.Size = UDim2.new(0, 340, 0, 26)
+
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(0, 6)
+StatusCorner.Parent = StatusFrame
+
+local StatusStroke = Instance.new("UIStroke")
+StatusStroke.Parent = StatusFrame
+StatusStroke.Color = Color3.fromRGB(60, 60, 80)
+StatusStroke.Transparency = 0.4
+StatusStroke.Thickness = 1
+
+-- Dòng thông báo trạng thái bên trong khung Badge
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Parent = StatusFrame
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Size = UDim2.new(1, 0, 1, 0)
+StatusLabel.Font = Enum.Font.GothamMedium
+StatusLabel.Text = "Please complete verification to proceed"
+StatusLabel.TextColor3 = Color3.fromRGB(170, 170, 185)
+StatusLabel.TextSize = 12
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Nút Check Key
+local CheckBtn = Instance.new("TextButton")
+CheckBtn.Name = "CheckBtn"
+CheckBtn.Parent = MainFrame
+CheckBtn.BackgroundColor3 = Color3.fromRGB(235, 35, 65)
+CheckBtn.Position = UDim2.new(0.5, -170, 0, 175)
+CheckBtn.Size = UDim2.new(0, 162, 0, 44)
+CheckBtn.Font = Enum.Font.GothamBold
+CheckBtn.Text = "Check Key"
+CheckBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CheckBtn.TextSize = 14
+CheckBtn.AutoButtonColor = false
+
+local CheckCorner = Instance.new("UICorner")
+CheckCorner.CornerRadius = UDim.new(0, 10)
+CheckCorner.Parent = CheckBtn
+
+-- Nút Get Key
+local GetKeyBtn = Instance.new("TextButton")
+GetKeyBtn.Name = "GetKeyBtn"
+GetKeyBtn.Parent = MainFrame
+GetKeyBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+GetKeyBtn.BackgroundTransparency = 0.3
+GetKeyBtn.Position = UDim2.new(0.5, 8, 0, 175)
+GetKeyBtn.Size = UDim2.new(0, 162, 0, 44)
+GetKeyBtn.Font = Enum.Font.GothamBold
+GetKeyBtn.Text = "Get Key"
+GetKeyBtn.TextColor3 = Color3.fromRGB(255, 85, 105)
+GetKeyBtn.TextSize = 14
+GetKeyBtn.AutoButtonColor = false
+
+local GetKeyCorner = Instance.new("UICorner")
+GetKeyCorner.CornerRadius = UDim.new(0, 10)
+GetKeyCorner.Parent = GetKeyBtn
+
+local GetKeyStroke = Instance.new("UIStroke")
+GetKeyStroke.Parent = GetKeyBtn
+GetKeyStroke.Color = Color3.fromRGB(235, 35, 65)
+GetKeyStroke.Transparency = 0.35
+GetKeyStroke.Thickness = 1
+
+-- Hiệu ứng Hover mượt mà cho nút
+for _, btn in pairs({CheckBtn, GetKeyBtn}) do
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        if btn == CheckBtn then
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+        else
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.3}):Play()
+        end
+    end)
+end
+
+-- Hàm hiệu ứng lắc mượt mà siêu êm ái bằng TweenService
+local function SmoothShake()
+    local info = TweenInfo.new(0.06, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    
+    local t1 = TweenService:Create(MainFrame, info, {Position = originalPos + UDim2.new(0, -8, 0, 0)})
+    local t2 = TweenService:Create(MainFrame, info, {Position = originalPos + UDim2.new(0, 8, 0, 0)})
+    local t3 = TweenService:Create(MainFrame, info, {Position = originalPos + UDim2.new(0, -5, 0, 0)})
+    local t4 = TweenService:Create(MainFrame, info, {Position = originalPos + UDim2.new(0, 5, 0, 0)})
+    local t5 = TweenService:Create(MainFrame, info, {Position = originalPos})
+
+    t1:Play()
+    t1.Completed:Connect(function() t2:Play() end)
+    t2.Completed:Connect(function() t3:Play() end)
+    t3.Completed:Connect(function() t4:Play() end)
+    t4.Completed:Connect(function() t5:Play() end)
+end
+
+-- Hàm thông báo hiện đại tích hợp hiệu ứng Pop/Slide mượt mà
+local function ShowModernNotification(text, textColor, bgColor, strokeColor)
+    StatusLabel.Text = text
+    
+    -- Tween đổi màu sắc khung Badge
+    TweenService:Create(StatusFrame, TweenInfo.new(0.3), {BackgroundColor3 = bgColor}):Play()
+    TweenService:Create(StatusStroke, TweenInfo.new(0.3), {Color = strokeColor}):Play()
+    TweenService:Create(StatusLabel, TweenInfo.new(0.3), {TextColor3 = textColor}):Play()
+    
+    -- Hiệu ứng co giãn nhẹ (Pop effect) cho khung thông báo
+    StatusFrame.Size = UDim2.new(0, 330, 0, 24)
+    local popIn = TweenService:Create(StatusFrame, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 340, 0, 26)})
+    popIn:Play()
+end
+
+-- Xử lý sự kiện Get Key
+GetKeyBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(GetKeyLink)
+        ShowModernNotification(
+            "Key link copied to clipboard!", 
+            Color3.fromRGB(80, 220, 140), 
+            Color3.fromRGB(20, 45, 30), 
+            Color3.fromRGB(46, 204, 113)
+        )
+    else
+        ShowModernNotification(
+            "Your executor does not support auto-copy!", 
+            Color3.fromRGB(255, 180, 50), 
+            Color3.fromRGB(45, 35, 20), 
+            Color3.fromRGB(241, 196, 15)
+        )
+    end
+end)
+
+-- Xử lý sự kiện Check Key
+CheckBtn.MouseButton1Click:Connect(function()
+    if KeyBox.Text == CorrectKey then
+        ShowModernNotification(
+            "Success! Loading script...", 
+            Color3.fromRGB(80, 220, 140), 
+            Color3.fromRGB(20, 45, 30), 
+            Color3.fromRGB(46, 204, 113)
+        )
+        
+        -- Lưu Key và thời gian hiện tại vào file để nhớ trong 24h
+        if writefile then
+            local dataToSave = httpService:JSONEncode({Key = CorrectKey, Time = os.time()})
+            pcall(function()
+                writefile(SaveFileName, dataToSave)
+            end)
+        end
+        
+        task.wait(0.8)
+        ScreenGui:Destroy()
+        
+        -- Chạy script chính
+        loadstring(game:HttpGet("https://gist.githubusercontent.com/thuyngudot42-svg/b343c9d9fa060b6deb1141b7851301f8/raw/3c92f5a61d76a6d18278160dbb8921e251ffd753/chilli-Venyxhub-ba-khi-909"))()
+    else
+        -- Thông báo lỗi hiện đại, tự động xóa sạch ô nhập và chạy hiệu ứng lắc siêu mượt
+        ShowModernNotification(
+            "Incorrect key! Please try again.", 
+            Color3.fromRGB(255, 90, 90), 
+            Color3.fromRGB(45, 20, 25), 
+            Color3.fromRGB(235, 35, 65)
+        )
+        KeyBox.Text = ""
+        SmoothShake()
+    end
+end)
